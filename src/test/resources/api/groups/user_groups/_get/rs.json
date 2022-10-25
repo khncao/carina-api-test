@@ -1,0 +1,14 @@
+{
+    "data": [
+        {
+            "name": "skip",
+            "id": "regex:[\\d]"
+        }
+    ],
+    "paging": {
+        "cursors": {
+            "before": "regex:[a-zA-Z\\d]+",
+            "after": "regex:[a-zA-Z\\d]+"
+        }
+    }
+}

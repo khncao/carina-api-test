@@ -12,10 +12,10 @@
 	<parameter name="jenkinsRegressionScheduling_api_regression" value="H 2 * * *"/>
 
 	<parameter name="jenkinsJobExecutionMode" value="continue"/>
-
-	<test name="User API tests">
+	
+	<test name="Facebook Group API tests">
 		<classes>
-			<class name="com.laba.carina.demo.APISampleTest" />
+			<class name="com.laba.facebook.groups.GroupsAPITest"/>
 		</classes>
 	</test>
 

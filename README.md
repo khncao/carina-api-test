@@ -1,24 +1,20 @@
-### Getting started
-* Install and configure JDK 11
-* Install and configure [Apache Maven 3.6.0+](http://maven.apache.org/)
-* Download and start the latest [Selenium standalone server](http://www.seleniumhq.org/download/)
-* Download the latest version of [Eclipse](http://www.eclipse.org/downloads/) and install [TestNG plugin](http://testng.org/doc/download.html)
-* [Read Carina documentation](http://zebrunner.github.io/carina)
+### Test Cases
+https://docs.google.com/spreadsheets/d/1XyfwCmcLufVoxVsiCoDKx1nvzsQmlw5ZhkCbDQdJu7o/edit?usp=sharing
 
-### Import to Eclipse
-If generation is successfully complete, you would see a new project folder with a name equal to the artifactId attribute specified during generation, so navigate to that folder (where pom.xml is located) and execute the following Maven task:
+### Config
+#### _config.properties
 ```
-mvn clean eclipse:eclipse
+DEV.user_id={GROUP_ADMIN_USER_ID}
+DEV.group_id={GROUP_ID}
 ```
-By executing this command, Maven should resolve all dependencies, downloading required libraries to your local repository and generating Eclipse classpath. Before importing new project to Eclipse, you should link your IDE to your Maven repository by executing the following task:
+#### local.properties
+Resource in classpath. Loaded in GroupsAPITest for api urlParam
 ```
-mvn -Dworkspace=<path_to_workspace> eclipse:configure-workspace
+access_token={USER_ACCESS_TOKEN}
 ```
-Here you have to specify the absolute path to the Eclipse workspace. After that, restart Eclipse IDE. Now you can import generated projects such as "Existing Java Project" into Eclipse IDE.
-Generate Eclipse workspace using command:
-```
-mvn clean eclipse:eclipse
-```
+
+### API Reference
+https://developers.facebook.com/docs/groups-api/reference
 
 ### Run tests
 ```

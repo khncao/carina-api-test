@@ -1,0 +1,5 @@
+{
+    "name": "skip",
+    "privacy": "skip",
+    "id": "regex:[\\d]"
+}

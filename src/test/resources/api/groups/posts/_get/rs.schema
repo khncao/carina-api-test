@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "updated_time": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "updated_time",
+          "id"
+        ]
+      }
+    },
+    "paging": {
+      "type": "object",
+      "properties": {
+        "previous": {
+          "type": "string"
+        },
+        "next": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "previous",
+        "next"
+      ]
+    }
+  },
+  "required": [
+    "data",
+    "paging"
+  ]
+}
