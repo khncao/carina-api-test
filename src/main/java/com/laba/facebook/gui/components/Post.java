@@ -30,7 +30,7 @@ public class Post extends AbstractUIObject {
     private ExtendedWebElement deleteConfirmBtn;
 
     public Post(WebDriver driver, SearchContext searchContext) {
-        super(driver);
+        super(driver, searchContext);
         setUiLoadedMarker(bodyLabel);
     }
 

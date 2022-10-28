@@ -21,7 +21,7 @@ public class CreatePostDialog extends AbstractUIObject {
     private ExtendedWebElement postBtn;
 
     public CreatePostDialog(WebDriver driver, SearchContext searchContext) {
-        super(driver);
+        super(driver, searchContext);
         setUiLoadedMarker(postBtn);
     }
 

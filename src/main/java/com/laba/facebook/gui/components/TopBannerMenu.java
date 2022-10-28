@@ -19,7 +19,7 @@ public class TopBannerMenu extends AbstractUIObject {
     private ExtendedWebElement friendsBtn;
 
     public TopBannerMenu(WebDriver driver, SearchContext searchContext) {
-        super(driver);
+        super(driver, searchContext);
         setUiLoadedMarker(homeBtn);
     }
 
