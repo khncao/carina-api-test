@@ -9,12 +9,14 @@ import java.io.ObjectOutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.ibatis.io.Resources;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,6 @@ public class GroupsWebTest implements IAbstractTest {
         Assert.assertTrue(homePage.isPageOpened(), "Home page(banner) was not loaded after login as expected");
 
         sessionCookies = driver.manage().getCookies();
-        // saveCookiesToFile(driver, SessionCookiePath);
     }
 
     @Test()
@@ -97,8 +98,11 @@ public class GroupsWebTest implements IAbstractTest {
         createPostDialog.inputTitleText(postTitle);
         createPostDialog.inputMessageText(postMessage);
         createPostDialog.pressPostButton();
-        groupPage.open();
 
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(createPostDialog.getRootBy()));
+        refreshAndWaitUntilDone(driver);
+        wait.until(ExpectedConditions.visibilityOf(groupPage.getGroupPostFeed().getRootElement()));
         Post firstPost = groupPage.getGroupPostFeed().getFirstPost();
         SoftAssert softAssert = new SoftAssert();
         softAssert.assertEquals(firstPost.getTitleLabel().getText(), postTitle, "First post title did not match expected test value");
@@ -116,7 +120,9 @@ public class GroupsWebTest implements IAbstractTest {
         int startCommentCount = firstPost.getCommentCount();
         String comment = "test comment abc";
         firstPost.typeAndSubmitCommentText(comment);
-        groupPage.open();
+        refreshAndWaitUntilDone(driver);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.visibilityOf(groupPage.getGroupPostFeed().getFirstPost().getRootElement()));
         int commentCount = groupPage.getGroupPostFeed().getFirstPost().getCommentCount();
         Assert.assertEquals(commentCount, startCommentCount + 1, "Comment count did not increment by 1 as expected: " + commentCount + " : " + startCommentCount);
     }
@@ -128,21 +134,10 @@ public class GroupsWebTest implements IAbstractTest {
         // WebDriver driver = getDriver();
         GroupPage groupPage = openLoggedInGroupPage(driver);
         Post firstPost = groupPage.getGroupPostFeed().getFirstPost();
-        String firstPostBody = firstPost.getBodyLabel().getText();
         firstPost.pressPostActionsButton();
         firstPost.pressDeletePostButton();
         firstPost.pressDeleteConfirmButton();
-
-        //TODO(khncao): check for post deleted alert instead
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            LOGGER.error(e.toString());
-        }
-        groupPage.open();
-        //TODO(khncao): need better way to locate post body so doesnt rely on title; also warn if empty title
-        String newFirstPostBody = groupPage.getGroupPostFeed().getFirstPost().getBodyLabel().getText();
-        Assert.assertNotEquals(firstPostBody, newFirstPostBody, "Newly first post body should typically not be same as old first post's: " + firstPostBody + " : " + newFirstPostBody);
+        Assert.assertTrue(firstPost.waitUntilPostDeletedAlert(5));
     }
 
     private GroupPage openLoggedInGroupPage(WebDriver driver) {
@@ -181,9 +176,15 @@ public class GroupsWebTest implements IAbstractTest {
         if (sessionCookies != null) {
             for (Cookie c : sessionCookies) {
                 driver.manage().addCookie(c);
-                System.out.println(c);
             }
         }
+        refreshAndWaitUntilDone(driver);
+    }
+
+    private void refreshAndWaitUntilDone(WebDriver driver) {
+        WebElement anyEle = driver.findElement(By.xpath("*"));
+        WebDriverWait wait = new WebDriverWait(driver, 5);
         driver.navigate().refresh();
+        wait.until(ExpectedConditions.stalenessOf(anyEle));
     }
 }

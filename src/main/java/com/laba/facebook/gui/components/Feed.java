@@ -20,7 +20,7 @@ public class Feed extends AbstractUIObject {
 
     public Feed(WebDriver driver, SearchContext searchContext) {
         super(driver, searchContext);
-        setUiLoadedMarker(firstPost.getTitleLabel());
+        setUiLoadedMarker(firstPost.getActionsButton());
     }
 
     public Post getFirstPost() {

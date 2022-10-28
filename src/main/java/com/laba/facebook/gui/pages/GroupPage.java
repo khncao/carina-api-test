@@ -19,15 +19,15 @@ public class GroupPage extends AbstractPage {
     private TopBannerMenu topBannerMenu;
     @FindBy(xpath = "//span[contains(text(),'Write something')]//ancestor::div[2 and @role='button']")
     private ExtendedWebElement postComposeBtn;
-    @FindBy(xpath = "//div[@data-pagelet='GroupInlineComposer']")
+    @FindBy(xpath = "//div[@role='dialog']//form")
     private CreatePostDialog createPostDialog;
-    @FindBy(xpath = "//div[@role='feed']")
+    @FindBy(xpath = "//div[@data-pagelet='GroupFeed']")
     private Feed groupPostFeed;
     
     public GroupPage(WebDriver driver, String groupId) {
         super(driver);
         setPageURL("/groups/" + groupId);
-        setUiLoadedMarker(postComposeBtn);
+        setUiLoadedMarker(groupPostFeed.getUiLoadedMarker());
     }
 
     public TopBannerMenu getTopBannerMenu() {

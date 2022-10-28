@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,5 +36,9 @@ public class CreatePostDialog extends AbstractUIObject {
 
     public void pressPostButton() {
         postBtn.click();
+    }
+
+    public WebElement getPostButton() {
+        return postBtn.getElement();
     }
 }
