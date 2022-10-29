@@ -7,6 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.invoke.MethodHandles;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Properties;
 import java.util.Set;
 
@@ -16,6 +23,7 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -31,6 +39,7 @@ import com.laba.facebook.gui.pages.GroupPage;
 import com.laba.facebook.gui.pages.HomePage;
 import com.laba.facebook.gui.pages.LoginPage;
 import com.qaprosoft.carina.core.foundation.IAbstractTest;
+import com.qaprosoft.carina.core.foundation.utils.Configuration;
 import com.qaprosoft.carina.core.foundation.utils.ownership.MethodOwner;
 
 public class GroupsWebTest implements IAbstractTest {
@@ -52,8 +61,7 @@ public class GroupsWebTest implements IAbstractTest {
     @Test()
     @MethodOwner(owner = "khncao")
     public void testLogin() {
-        WebDriver driver = new ChromeDriver();
-        // WebDriver driver = getDriver();
+        WebDriver driver = getDriverOrFallback();
         LoginPage loginPage = new LoginPage(driver);
         loginPage.open();
 
@@ -71,8 +79,7 @@ public class GroupsWebTest implements IAbstractTest {
     @Test()
     @MethodOwner(owner = "khncao")
     public void testLoginWithInvalidCredentials() {
-        WebDriver driver = new ChromeDriver();
-        // WebDriver driver = getDriver();
+        WebDriver driver = getDriverOrFallback();
         LoginPage loginPage = new LoginPage(driver);
         loginPage.open();
 
@@ -86,8 +93,7 @@ public class GroupsWebTest implements IAbstractTest {
     @Test(priority = 3)
     @MethodOwner(owner = "khncao")
     public void testCreateGroupPost() {
-        WebDriver driver = new ChromeDriver();
-        // WebDriver driver = getDriver();
+        WebDriver driver = getDriverOrFallback();
         GroupPage groupPage = openLoggedInGroupPage(driver);
 
         groupPage.pressPostComposeButton();
@@ -113,8 +119,7 @@ public class GroupsWebTest implements IAbstractTest {
     @Test(priority = 4)
     @MethodOwner(owner = "khncao")
     public void testAddCommentOnFirstGroupPost() {
-        WebDriver driver = new ChromeDriver();
-        // WebDriver driver = getDriver();
+        WebDriver driver = getDriverOrFallback();
         GroupPage groupPage = openLoggedInGroupPage(driver);
         Post firstPost = groupPage.getGroupPostFeed().getFirstPost();
         int startCommentCount = firstPost.getCommentCount();
@@ -130,8 +135,7 @@ public class GroupsWebTest implements IAbstractTest {
     @Test(priority = 5)
     @MethodOwner(owner = "khncao")
     public void testDeleteFirstGroupPost() {
-        WebDriver driver = new ChromeDriver();
-        // WebDriver driver = getDriver();
+        WebDriver driver = getDriverOrFallback();
         GroupPage groupPage = openLoggedInGroupPage(driver);
         Post firstPost = groupPage.getGroupPostFeed().getFirstPost();
         firstPost.pressPostActionsButton();
@@ -146,6 +150,51 @@ public class GroupsWebTest implements IAbstractTest {
         injectCookiesAndRefresh(driver);
         Assert.assertTrue(groupPage.isPageOpened(), "Group page did not open as expected");
         return groupPage;
+    }
+
+    // TODO(khncao): to some kind of util or parent
+    private WebDriver getDriverOrFallback() {
+        WebDriver driver = null;
+        try {
+            URI statusUri = new URI(Configuration.getSeleniumUrl() + "/status");
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder(statusUri).GET().timeout(Duration.ofSeconds(2)).build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if(response.statusCode() == 200) {
+                driver = getDriver();
+            }
+        } catch (MalformedURLException e) {
+            LOGGER.error(e.toString());
+        } catch (IOException e) {
+            LOGGER.error(e.toString());
+        } catch (IllegalArgumentException e) {
+            LOGGER.error(e.toString());
+        } catch (InterruptedException e) {
+            LOGGER.error(e.toString());
+        } catch (URISyntaxException e) {
+            LOGGER.error(e.toString());
+        } finally {
+            if(driver == null) {
+                String browser = Configuration.getBrowser();
+                if(browser == null || browser.isEmpty()) {
+                    LOGGER.error("Selenium browser not configured");
+                }
+                switch(browser) {
+                    case "chrome": {
+                        driver = new ChromeDriver();
+                        break;
+                    }
+                    case "firefox": {
+                        driver = new FirefoxDriver();
+                        break;
+                    }
+                    default: {
+                        LOGGER.error(browser + " not supported");
+                    }
+                }
+            }
+        }
+        return driver;
     }
 
     // TODO(khncao): move to some sort of cookie session manager util
