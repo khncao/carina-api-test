@@ -38,3 +38,5 @@ reports/
 local.properties
 release.properties
 crypto.key
+
+*/**/resources/local/

@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite verbose="1" name="Carina Demo Tests - Web Sample" parallel="methods">
+
+	<parameter name="suiteOwner" value="khncao"/>
+
+	<test name="Facebook groups web tests">
+		<classes>
+			<class name="com.laba.facebook.web.GroupsWebTest" />
+		</classes>
+	</test>
+
+</suite>
